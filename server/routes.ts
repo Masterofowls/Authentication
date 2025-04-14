@@ -4,6 +4,15 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema } from "@shared/schema";
 import { createClient } from "@supabase/supabase-js";
+import { SessionData } from "express-session";
+
+// Extend SessionData with our custom properties
+declare module "express-session" {
+  interface SessionData {
+    userId?: number;
+    supabaseToken?: string;
+  }
+}
 
 // Get Supabase URL and service key from environment variables
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -110,27 +119,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Logout endpoint
   app.post("/api/logout", (req, res) => {
-    try {
-      // Clear session
-      req.session.destroy((err) => {
-        if (err) {
-          return res.status(500).json({ message: "Failed to logout" });
-        }
-        
-        // Clear any cookies
-        res.clearCookie("connect.sid");
-        
-        return res.status(200).json({ message: "Logged out successfully" });
-      });
-    } catch (error) {
-      return res.status(500).json({ message: "Server error during logout" });
+    // Check if session exists
+    if (!req.session) {
+      return res.status(200).json({ message: "Already logged out" });
     }
+    
+    // Clear session data directly
+    req.session.userId = undefined;
+    req.session.supabaseToken = undefined;
+    
+    // Send success response
+    return res.status(200).json({ message: "Logged out successfully" });
   });
 
   // Get current user endpoint
   app.get("/api/user", async (req, res) => {
     try {
-      if (!req.session.userId) {
+      // Check if user is authenticated
+      if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
       
@@ -143,6 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password, ...userWithoutPassword } = user;
       return res.status(200).json(userWithoutPassword);
     } catch (error) {
+      console.error("Error getting user:", error);
       return res.status(500).json({ message: "Server error" });
     }
   });
