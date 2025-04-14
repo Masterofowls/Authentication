@@ -84,8 +84,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Simply compare passwords directly from storage
-      // This is a simplified approach for this app, bypassing Supabase
+      // Verify the password using our storage method
+      const passwordValid = await storage.verifyPassword(validatedData.password, user.password);
+      if (!passwordValid) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      // If we get here, credentials are valid
       const { password, ...userWithoutPassword } = user;
       
       // Set session cookie

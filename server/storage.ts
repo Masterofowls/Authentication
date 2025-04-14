@@ -48,9 +48,10 @@ export class MemStorage implements IStorage {
     const createdAt = new Date();
     
     const user: User = { 
-      ...insertUser, 
       id,
+      email: insertUser.email,
       password, 
+      supabaseId: insertUser.supabaseId || null,
       createdAt
     };
     
@@ -66,6 +67,22 @@ export class MemStorage implements IStorage {
       crypto.scrypt(password, salt, 64, (err, derivedKey) => {
         if (err) reject(err);
         resolve(derivedKey.toString("hex") + ":" + salt);
+      });
+    });
+  }
+  
+  // Method to verify password
+  async verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const [hash, salt] = hashedPassword.split(":");
+      if (!hash || !salt) {
+        // If password format is invalid
+        return resolve(false);
+      }
+      
+      crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+        if (err) reject(err);
+        resolve(hash === derivedKey.toString("hex"));
       });
     });
   }
