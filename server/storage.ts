@@ -38,20 +38,23 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    // Hash password if it's not already managed by Supabase
-    let password = insertUser.password;
-    if (password !== "supabase-managed") {
-      password = await this.hashPassword(insertUser.password);
-    }
+    console.log("Creating user:", insertUser.email);
+    
+    // Hash password for security
+    const password = await this.hashPassword(insertUser.password);
     
     const id = this.currentId++;
     const createdAt = new Date();
     
+    // Ensure supabaseId is null when it's not provided (undefined)
+    const supabaseId = insertUser.supabaseId || null;
+    console.log("Using supabaseId:", supabaseId);
+    
     const user: User = { 
       id,
       email: insertUser.email,
-      password, 
-      supabaseId: insertUser.supabaseId || null,
+      password,
+      supabaseId,
       createdAt
     };
     
