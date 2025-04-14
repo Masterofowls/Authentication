@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema } from "@shared/schema";
 import { createClient } from "@supabase/supabase-js";
-import { SessionData } from "express-session";
+import session from "express-session";
+import crypto from "crypto";
 
 // Extend SessionData with our custom properties
 declare module "express-session" {
@@ -22,6 +23,18 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup session middleware
+  const sessionSecret = crypto.randomBytes(32).toString('hex');
+  app.use(session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
   // Register user endpoint
   app.post("/api/register", async (req, res) => {
     try {
