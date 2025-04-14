@@ -59,13 +59,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       try {
-        // Use signUp method instead which creates a session
-        const { data: supabaseData, error: supabaseError } = await supabase.auth.signUp({
+        // For demo purposes, we'll use admin.createUser which allows us to auto-confirm emails
+        const { data: supabaseData, error: supabaseError } = await supabase.auth.admin.createUser({
           email: validatedData.email,
           password: validatedData.password,
-          options: {
-            emailRedirectTo: `${req.protocol}://${req.get('host')}/auth`
-          }
+          email_confirm: true // Auto-confirm email for the demo
         });
 
         if (supabaseError) {
