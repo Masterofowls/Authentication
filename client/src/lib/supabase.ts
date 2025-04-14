@@ -4,17 +4,23 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Check if we have valid Supabase credentials
+// Validate Supabase configuration
 const hasValidSupabaseConfig = supabaseUrl && supabaseAnonKey;
 
 if (!hasValidSupabaseConfig) {
-  console.warn('Missing Supabase credentials. Authentication will use the backend fallback.');
+  console.error('Missing Supabase credentials. Authentication will not work properly.');
 } else {
   console.log('Supabase credentials detected, using Supabase authentication.');
 }
 
-// Create Supabase client (will fail gracefully if credentials not available)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+});
 
 // Auth related types
 export type SignUpCredentials = {
