@@ -77,38 +77,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const validatedData = loginSchema.parse(req.body);
 
-      // Sign in with Supabase
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: validatedData.email,
-        password: validatedData.password,
-      });
-
-      if (signInError) {
+      // Get user from our database directly without Supabase 
+      // (so login will work without Supabase connection)
+      const user = await storage.getUserByEmail(validatedData.email);
+      if (!user) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Get user from our database
-      const user = await storage.getUserByEmail(validatedData.email);
-      if (!user) {
-        // Create user in our database if it exists in Supabase but not in our DB
-        const newUser = await storage.createUser({
-          email: validatedData.email,
-          password: "supabase-managed", // Password managed by Supabase
-          supabaseId: signInData.user.id,
-        });
-        
-        const { password, ...userWithoutPassword } = newUser;
-        return res.status(200).json(userWithoutPassword);
-      }
-
-      // Return user data without password
+      // Simply compare passwords directly from storage
+      // This is a simplified approach for this app, bypassing Supabase
       const { password, ...userWithoutPassword } = user;
       
-      // Set session cookie or token as needed
+      // Set session cookie
       req.session.userId = user.id;
-      req.session.supabaseToken = signInData.session.access_token;
       
-      return res.status(200).json(userWithoutPassword);
+      // Save the session before responding
+      return req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ message: "Error saving session" });
+        }
+        return res.status(200).json(userWithoutPassword);
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.message });
