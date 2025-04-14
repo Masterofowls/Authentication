@@ -34,18 +34,11 @@ export default function HomePage() {
               </h1>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="rounded-full"
-              >
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="rounded-full"
+                className="rounded-full hidden sm:flex"
               >
                 <Settings className="h-5 w-5" />
               </Button>

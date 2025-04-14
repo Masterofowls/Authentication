@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useLocation } from "wouter";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, Mail, Lock, ShieldCheck, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { IconLock, IconShieldLock } from "@tabler/icons-react";
 
@@ -131,25 +131,36 @@ export default function AuthPage() {
 
   return (
     <GradientBackground className="overflow-hidden">
-      <div className="flex min-h-screen flex-col lg:flex-row">
+      <div className="flex min-h-screen flex-col lg:flex-row relative">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-40">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl"></div>
+          <div className="absolute top-1/3 -left-24 w-80 h-80 bg-purple-500/10 rounded-full filter blur-3xl"></div>
+          <div className="absolute -bottom-32 left-1/3 w-[500px] h-[500px] bg-blue-400/10 rounded-full filter blur-3xl"></div>
+        </div>
+        
         {/* Auth Forms Column */}
-        <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-8 z-10">
-          <div className="w-full max-w-md">
+        <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-4 sm:p-8 z-10 relative">
+          <div className="w-full max-w-md relative">
+            {/* Floating shapes/dots */}
+            <div className="absolute -top-10 -left-10 w-24 h-24 bg-primary/5 rounded-full hidden lg:block"></div>
+            <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-primary/5 rounded-full hidden lg:block"></div>
+            
             {/* Logo/Branding */}
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white">
-                <IconShieldLock className="h-7 w-7" stroke={2.5} />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-purple-600 text-white shadow-lg">
+                <IconShieldLock className="h-8 w-8" stroke={2} />
               </div>
-              <h2 className="mt-4 text-3xl font-bold">
+              <h2 className="mt-5 text-4xl font-bold">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
                   SecureApp
                 </span>
               </h2>
-              <p className="mt-1 text-slate-600">Powerful authentication system</p>
+              <p className="mt-2 text-slate-600 text-lg">Powerful authentication system</p>
             </div>
 
             {/* Auth Card */}
-            <Card className="bg-white shadow-lg border-none">
+            <Card className="bg-white/90 backdrop-blur-sm shadow-xl border-none rounded-2xl">
               <CardContent className="pt-6">
                 {authState === "login" || authState === "register" ? (
                   <Tabs 
@@ -157,9 +168,9 @@ export default function AuthPage() {
                     onValueChange={(value) => setAuthState(value as "login" | "register")}
                     className="w-full"
                   >
-                    <TabsList className="grid w-full grid-cols-2 mb-4">
-                      <TabsTrigger value="login">Sign In</TabsTrigger>
-                      <TabsTrigger value="register">Sign Up</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 mb-6 rounded-full p-1 bg-slate-100">
+                      <TabsTrigger value="login" className="rounded-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Sign In</TabsTrigger>
+                      <TabsTrigger value="register" className="rounded-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Sign Up</TabsTrigger>
                     </TabsList>
                     
                     {/* Login Form */}
@@ -173,7 +184,14 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Enter your email" {...field} />
+                                  <div className="relative">
+                                    <Input 
+                                      placeholder="Enter your email" 
+                                      className="pl-10 py-6 rounded-xl" 
+                                      {...field} 
+                                    />
+                                    <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                                  </div>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -186,7 +204,15 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                  <Input type="password" placeholder="Enter your password" {...field} />
+                                  <div className="relative">
+                                    <Input 
+                                      type="password" 
+                                      placeholder="Enter your password" 
+                                      className="pl-10 py-6 rounded-xl" 
+                                      {...field} 
+                                    />
+                                    <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                                  </div>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -221,7 +247,7 @@ export default function AuthPage() {
                           
                           <Button 
                             type="submit" 
-                            className="w-full" 
+                            className="w-full py-6 rounded-xl mt-4 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90" 
                             disabled={loginMutation.isPending}
                           >
                             {loginMutation.isPending ? (
@@ -247,7 +273,14 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Enter your email" {...field} />
+                                  <div className="relative">
+                                    <Input 
+                                      placeholder="Enter your email" 
+                                      className="pl-10 py-6 rounded-xl" 
+                                      {...field} 
+                                    />
+                                    <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                                  </div>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -260,7 +293,15 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                  <Input type="password" placeholder="Create a password" {...field} />
+                                  <div className="relative">
+                                    <Input 
+                                      type="password" 
+                                      placeholder="Create a password" 
+                                      className="pl-10 py-6 rounded-xl" 
+                                      {...field} 
+                                    />
+                                    <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                                  </div>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -273,7 +314,15 @@ export default function AuthPage() {
                               <FormItem>
                                 <FormLabel>Confirm Password</FormLabel>
                                 <FormControl>
-                                  <Input type="password" placeholder="Confirm your password" {...field} />
+                                  <div className="relative">
+                                    <Input 
+                                      type="password" 
+                                      placeholder="Confirm your password" 
+                                      className="pl-10 py-6 rounded-xl" 
+                                      {...field} 
+                                    />
+                                    <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                                  </div>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -289,6 +338,7 @@ export default function AuthPage() {
                                   <Checkbox 
                                     checked={field.value} 
                                     onCheckedChange={field.onChange}
+                                    className="mt-1"
                                   />
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
@@ -304,7 +354,7 @@ export default function AuthPage() {
                           
                           <Button 
                             type="submit" 
-                            className="w-full" 
+                            className="w-full py-6 rounded-xl mt-4 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90" 
                             disabled={registerMutation.isPending}
                           >
                             {registerMutation.isPending ? (
@@ -337,7 +387,14 @@ export default function AuthPage() {
                             <FormItem>
                               <FormLabel>Email</FormLabel>
                               <FormControl>
-                                <Input placeholder="Enter your email" {...field} />
+                                <div className="relative">
+                                  <Input 
+                                    placeholder="Enter your email" 
+                                    className="pl-10 py-6 rounded-xl" 
+                                    {...field} 
+                                  />
+                                  <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                                </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -346,7 +403,7 @@ export default function AuthPage() {
                         
                         <Button 
                           type="submit" 
-                          className="w-full" 
+                          className="w-full py-6 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90" 
                           disabled={resetPasswordMutation.isPending}
                         >
                           {resetPasswordMutation.isPending ? (
@@ -372,9 +429,7 @@ export default function AuthPage() {
                 ) : authState === "resetSuccess" ? (
                   <div className="py-6 text-center space-y-4">
                     <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                      <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
+                      <CheckCircle className="h-6 w-6 text-green-600" />
                     </div>
                     <h3 className="text-lg font-medium text-slate-900 mb-2">Check your email</h3>
                     <p className="text-sm text-gray-600">
@@ -383,7 +438,7 @@ export default function AuthPage() {
                     <div className="mt-6">
                       <Button
                         variant="outline"
-                        className="w-full"
+                        className="w-full rounded-xl py-6"
                         onClick={() => setAuthState("login")}
                       >
                         Back to Sign In
@@ -393,9 +448,7 @@ export default function AuthPage() {
                 ) : authState === "verifyEmail" ? (
                   <div className="py-6 text-center space-y-4">
                     <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
-                      <svg className="h-6 w-6 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
+                      <Mail className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="text-lg font-medium text-slate-900 mb-2">Verify your email address</h3>
                     <p className="text-sm text-gray-600">
@@ -404,7 +457,7 @@ export default function AuthPage() {
                     <div className="mt-6">
                       <Button
                         variant="outline"
-                        className="w-full"
+                        className="w-full rounded-xl py-6"
                         onClick={() => setAuthState("login")}
                       >
                         Back to Sign In
@@ -456,22 +509,33 @@ export default function AuthPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">Quick Integration</h3>
-                  <p className="text-white/80">Get up and running with minimal setup. Easy to integrate with your existing applications.</p>
+                  <h3 className="text-lg font-semibold mb-1">Fast Integration</h3>
+                  <p className="text-white/80">Easily integrate with your existing application or build from scratch.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-white/20 flex items-center justify-center mr-4">
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">Complete Solution</h3>
-                  <p className="text-white/80">Includes user registration, login, password reset and protected routes out of the box.</p>
+                  <h3 className="text-lg font-semibold mb-1">Modern Framework</h3>
+                  <p className="text-white/80">Built with React, TypeScript and other modern technologies.</p>
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-10">
+              <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+                <div className="flex items-center mb-3">
+                  <div className="h-3 w-3 rounded-full bg-green-400 mr-2"></div>
+                  <p className="text-sm font-medium">Active Protection</p>
+                </div>
+                <p className="text-sm text-white/70">
+                  Your system is actively protected against common threats including brute force attacks, SQL injection, and XSS vulnerabilities.
+                </p>
               </div>
             </div>
           </div>
